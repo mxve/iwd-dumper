@@ -1,0 +1,12 @@
+[package]
+name = "iwd-dumper"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+zip = "0.6.6"
+walkdir = "2.5.0"
+rayon = "1.9.0"
+clap = { version = "4.5.2", features = ["derive"] }
