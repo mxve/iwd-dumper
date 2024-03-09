@@ -1,10 +1,7 @@
-use rayon::prelude::*;
-use std::{
-    fs,
-    path::Path,
-};
-use walkdir::WalkDir;
 use clap::Parser;
+use rayon::prelude::*;
+use std::{fs, path::Path};
+use walkdir::WalkDir;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -71,32 +68,34 @@ fn main() {
         .build_global()
         .unwrap();
 
-        println!(
+    println!(
             "Dumping\n    IWDs from\n        {}\n    to\n        {}\n    threads: {}\n    extension: {}",
             args.source, args.output, rayon::current_num_threads(), args.extension
         );
 
-    let file_paths: Vec<_> = WalkDir::new(Path::new(
-        &args.source,
-    ))
-    .into_iter()
-    .filter_map(|e| e.ok())
-    .par_bridge()
-    .filter(|entry| entry.file_type().is_file())
-    .filter_map(|entry| {
-        if let Some(extension) = entry.path().extension() {
-            if extension == "iwd" {
-                Some(entry.path().to_owned())
+    let file_paths: Vec<_> = WalkDir::new(Path::new(&args.source))
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .par_bridge()
+        .filter(|entry| entry.file_type().is_file())
+        .filter_map(|entry| {
+            if let Some(extension) = entry.path().extension() {
+                if extension == "iwd" {
+                    Some(entry.path().to_owned())
+                } else {
+                    None
+                }
             } else {
                 None
             }
-        } else {
-            None
-        }
-    })
-    .collect();
+        })
+        .collect();
 
     file_paths.into_par_iter().for_each(|file_path| {
-        unzip(file_path.as_path(), Path::new(&args.output), &args.extension);
+        unzip(
+            file_path.as_path(),
+            Path::new(&args.output),
+            &args.extension,
+        );
     });
 }
