@@ -2,6 +2,7 @@ use clap::Parser;
 use rayon::prelude::*;
 use std::{fs, path::Path};
 use walkdir::WalkDir;
+use colored::*;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -92,10 +93,12 @@ fn main() {
         .collect();
 
     file_paths.into_par_iter().for_each(|file_path| {
+        println!("[{}] {}", "Starting".bright_purple(), file_path.display());
         unzip(
             file_path.as_path(),
             Path::new(&args.output),
             &args.extension,
         );
+        println!("[{}] {}", "Finished".bright_green(), file_path.display());
     });
 }
